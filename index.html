@@ -1,756 +1,1023 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>JVPD Gulmohar GIS</title>
+
+
+  <!-- LEAFLET CSS -->
 
   <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
+  >
+
 
   <style>
 
-    html, body {
+    html,
+    body {
+
       margin: 0;
       padding: 0;
+
       width: 100%;
       height: 100%;
-      font-family: Arial, Helvetica, sans-serif;
+
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
       background: #f7f7f4;
+
     }
+
 
     #map {
+
       width: 100%;
       height: 100vh;
+
       background: #f7f7f4;
+
     }
 
-    /* TITLE */
+
+    /* =================================================
+       TITLE
+    ================================================= */
 
     .map-title {
+
       position: absolute;
+
       top: 22px;
       left: 22px;
+
       z-index: 1000;
 
-      background: rgba(255,255,255,0.96);
-      padding: 14px 18px;
+      background:
+        rgba(255,255,255,0.95);
 
-      border-radius: 3px;
+      padding:
+        14px 18px;
+
+      border-radius: 4px;
 
       box-shadow:
-        0 2px 8px rgba(0,0,0,0.12);
+        0 2px 10px
+        rgba(0,0,0,0.15);
+
     }
 
+
     .map-title h1 {
+
       margin: 0;
 
       font-size: 20px;
+
       font-weight: 600;
-      letter-spacing: 0.5px;
+
+      letter-spacing:
+        0.5px;
+
     }
+
 
     .map-title p {
-      margin: 5px 0 0;
+
+      margin:
+        5px 0 0;
 
       font-size: 12px;
+
       color: #777;
+
     }
 
 
-    /* LAYER CONTROL */
+    /* =================================================
+       LAYER CONTROL
+    ================================================= */
 
     .leaflet-control-layers {
+
       border: none !important;
-      border-radius: 3px !important;
+
+      border-radius: 4px !important;
 
       box-shadow:
-        0 2px 8px rgba(0,0,0,0.12) !important;
+        0 2px 10px
+        rgba(0,0,0,0.15) !important;
 
       font-size: 13px;
+
     }
+
 
     .leaflet-control-layers-expanded {
-      padding: 12px 14px;
+
+      padding:
+        12px 14px;
+
     }
 
 
-    /* LEGEND */
+    .leaflet-control-layers-base {
+
+      margin-bottom:
+        8px;
+
+      padding-bottom:
+        8px;
+
+      border-bottom:
+        1px solid #ddd;
+
+    }
+
+
+    /* =================================================
+       LEGEND
+    ================================================= */
 
     .legend {
-      background: rgba(255,255,255,0.96);
 
-      padding: 13px 15px;
+      background:
+        rgba(255,255,255,0.95);
 
-      border-radius: 3px;
+      padding:
+        13px 15px;
+
+      border-radius: 4px;
 
       box-shadow:
-        0 2px 8px rgba(0,0,0,0.12);
+        0 2px 10px
+        rgba(0,0,0,0.15);
 
       font-size: 12px;
 
       line-height: 20px;
+
     }
+
 
     .legend-title {
+
       font-size: 13px;
+
       font-weight: 600;
+
       margin-bottom: 7px;
+
     }
+
 
     .legend-item {
+
       display: flex;
-      align-items: center;
-      margin: 4px 0;
+
+      align-items:
+        center;
+
+      margin:
+        4px 0;
+
     }
 
+
     .legend-box {
+
       width: 18px;
+
       height: 11px;
 
       margin-right: 8px;
 
-      border: 1px solid #555;
+      border:
+        1px solid #555;
+
     }
 
-    .legend-line {
-      width: 20px;
-
-      margin-right: 8px;
-
-      border-top: 2px solid;
-    }
 
     .legend-dashed {
+
       width: 20px;
 
       margin-right: 8px;
 
-      border-top: 3px dashed;
+      border-top:
+        3px dashed;
+
     }
 
 
-    /* REMOVE DEFAULT LEAFLET ATTRIBUTION BACKGROUND */
+    /* =================================================
+       MOBILE
+    ================================================= */
 
-    .leaflet-control-attribution {
-      background: rgba(255,255,255,0.75) !important;
-      font-size: 9px;
+    @media (max-width: 700px) {
+
+      .map-title {
+
+        top: 12px;
+
+        left: 12px;
+
+        padding:
+          10px 12px;
+
+      }
+
+
+      .map-title h1 {
+
+        font-size: 16px;
+
+      }
+
+
+      .map-title p {
+
+        font-size: 10px;
+
+      }
+
+
+      .leaflet-control-layers-expanded {
+
+        font-size: 11px;
+
+      }
+
     }
 
   </style>
+
 </head>
 
 
 <body>
 
-<div id="map"></div>
 
+  <!-- MAP -->
 
-<div class="map-title">
+  <div id="map"></div>
 
-  <h1>JVPD SCHEME</h1>
 
-  <p>Gulmohar GIS Spatial Analysis</p>
+  <!-- TITLE -->
 
-</div>
+  <div class="map-title">
 
+    <h1>JVPD SCHEME</h1>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <p>
+      Gulmohar GIS Spatial Analysis
+    </p>
 
+  </div>
 
-<script>
 
+  <!-- LEAFLET -->
 
-/* =====================================================
-   MAP
-===================================================== */
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+  </script>
 
-const map = L.map("map", {
 
-  zoomControl: true,
+  <script>
 
-  attributionControl: true
 
-});
+    /* =================================================
+       INITIALIZE MAP
+    ================================================= */
 
+    const map = L.map("map", {
 
-/* =====================================================
-   LAYER GROUPS
-===================================================== */
+      zoomControl: true,
 
-const siteBoundaryLayer =
-  L.layerGroup();
+      attributionControl: true
 
-const buildingLayer =
-  L.layerGroup();
+    });
 
-const buildingFootprintLayer =
-  L.layerGroup();
 
-const roadLayer =
-  L.layerGroup();
+    /* =================================================
+       BASE MAP — STREET
+    ================================================= */
 
-const riverLayer =
-  L.layerGroup();
+    const streetMap =
 
-const openSpaceLayer =
-  L.layerGroup();
+      L.tileLayer(
 
-
-/* =====================================================
-   GIS STYLES
-===================================================== */
-
-
-/* SITE BOUNDARY */
-
-const siteBoundaryStyle = {
-
-  color: "#a90000",
-
-  weight: 4,
-
-  dashArray: "10 7",
-
-  fill: false
-
-};
-
-
-/* JVPD BUILDINGS */
-
-const buildingStyle = {
-
-  color: "#222222",
-
-  weight: 1.1,
-
-  fillColor: "#ffffff",
-
-  fillOpacity: 0.95
-
-};
-
-
-/* SURROUNDING BUILDINGS */
-
-const buildingFootprintStyle = {
-
-  color: "#888888",
-
-  weight: 0.7,
-
-  fillColor: "#eeeeeb",
-
-  fillOpacity: 0.45
-
-};
-
-
-/* ROADS */
-
-const roadStyle = {
-
-  color: "#777777",
-
-  weight: 0.8,
-
-  fillColor: "#d9d9d6",
-
-  fillOpacity: 0.75
-
-};
-
-
-/* RIVER */
-
-const riverStyle = {
-
-  color: "#5d8fa8",
-
-  weight: 1,
-
-  fillColor: "#a8cedb",
-
-  fillOpacity: 0.85
-
-};
-
-
-/* OPEN SPACE */
-
-const openSpaceStyle = {
-
-  color: "#78916c",
-
-  weight: 0.8,
-
-  fillColor: "#d5e3ce",
-
-  fillOpacity: 0.85
-
-};
-
-
-/* =====================================================
-   LOAD GEOJSON
-===================================================== */
-
-async function loadLayer(
-
-  file,
-
-  targetLayer,
-
-  style
-
-) {
-
-  try {
-
-    const response =
-      await fetch(file);
-
-    if (!response.ok) {
-
-      throw new Error(
-        "Could not load " + file
-      );
-
-    }
-
-    const data =
-      await response.json();
-
-
-    const geojson =
-
-      L.geoJSON(
-
-        data,
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
 
         {
 
-          style: style,
+          maxZoom: 20,
 
-
-          onEachFeature:
-            function(feature, layer) {
-
-
-              /* POPUP */
-
-              if (
-                feature.properties &&
-                Object.keys(
-                  feature.properties
-                ).length > 0
-              ) {
-
-                let popup = "";
-
-
-                Object.entries(
-                  feature.properties
-                ).forEach(
-                  ([key, value]) => {
-
-                    if (
-                      value !== null &&
-                      value !== undefined &&
-                      value !== ""
-                    ) {
-
-                      popup +=
-
-                        "<strong>" +
-
-                        key +
-
-                        ":</strong> " +
-
-                        value +
-
-                        "<br>";
-
-                    }
-
-                  }
-                );
-
-
-                if (popup !== "") {
-
-                  layer.bindPopup(popup);
-
-                }
-
-              }
-
-
-              /* HIGHLIGHT ON HOVER */
-
-              layer.on({
-
-                mouseover:
-                  function(e) {
-
-                    e.target.setStyle({
-
-                      weight: 2
-
-                    });
-
-                  },
-
-
-                mouseout:
-                  function(e) {
-
-                    geojson.resetStyle(
-                      e.target
-                    );
-
-                  }
-
-              });
-
-            }
+          attribution:
+            "&copy; OpenStreetMap contributors"
 
         }
 
       );
 
 
-    geojson.addTo(targetLayer);
+    /* =================================================
+       BASE MAP — SATELLITE
+    ================================================= */
 
+    const satelliteMap =
 
-    return geojson;
+      L.tileLayer(
 
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
 
-  }
+        {
 
-  catch(error) {
+          maxZoom: 20,
 
-    console.error(error);
+          attribution:
+            "Tiles &copy; Esri"
 
-    return null;
-
-  }
-
-}
-
-
-/* =====================================================
-   LOAD ALL GIS DATA
-===================================================== */
-
-async function loadAllLayers() {
-
-
-  const siteBoundary =
-
-    await loadLayer(
-
-      "data/data/siteboundary.geojson",
-
-      siteBoundaryLayer,
-
-      siteBoundaryStyle
-
-    );
-
-
-  const buildings =
-
-    await loadLayer(
-
-      "data/data/67_bldg.geojson",
-
-      buildingLayer,
-
-      buildingStyle
-
-    );
-
-
-  await loadLayer(
-
-    "data/data/bldg_footprint.geojson",
-
-    buildingFootprintLayer,
-
-    buildingFootprintStyle
-
-  );
-
-
-  await loadLayer(
-
-    "data/data/67_roads.geojson",
-
-    roadLayer,
-
-    roadStyle
-
-  );
-
-
-  await loadLayer(
-
-    "data/data/67_river.geojson",
-
-    riverLayer,
-
-    riverStyle
-
-  );
-
-
-  await loadLayer(
-
-    "data/data/67_openspace.geojson",
-
-    openSpaceLayer,
-
-    openSpaceStyle
-
-  );
-
-
-  /* =================================================
-     DEFAULT LAYERS
-  ================================================= */
-
-
-  siteBoundaryLayer.addTo(map);
-
-  buildingLayer.addTo(map);
-
-  roadLayer.addTo(map);
-
-  riverLayer.addTo(map);
-
-  openSpaceLayer.addTo(map);
-
-
-  /* =================================================
-     ZOOM TO SITE
-  ================================================= */
-
-
-  if (siteBoundary) {
-
-    map.fitBounds(
-
-      siteBoundary.getBounds(),
-
-      {
-
-        padding: [40, 40]
-
-      }
-
-    );
-
-  }
-
-}
-
-
-loadAllLayers();
-
-
-/* =====================================================
-   LAYER CONTROL
-===================================================== */
-
-const overlays = {
-
-
-  "Site Boundary":
-    siteBoundaryLayer,
-
-
-  "JVPD Buildings":
-    buildingLayer,
-
-
-  "Building Footprints":
-    buildingFootprintLayer,
-
-
-  "Roads":
-    roadLayer,
-
-
-  "River":
-    riverLayer,
-
-
-  "Open Spaces":
-    openSpaceLayer
-
-};
-
-
-L.control.layers(
-
-  null,
-
-  overlays,
-
-  {
-
-    collapsed: false
-
-  }
-
-).addTo(map);
-
-
-/* =====================================================
-   LEGEND
-===================================================== */
-
-const legend =
-
-  L.control({
-
-    position: "bottomright"
-
-  });
-
-
-legend.onAdd =
-
-  function() {
-
-
-    const div =
-
-      L.DomUtil.create(
-
-        "div",
-
-        "legend"
+        }
 
       );
 
 
-    div.innerHTML = `
+    /* SATELLITE DEFAULT */
 
-      <div class="legend-title">
-
-        JVPD GIS LAYERS
-
-      </div>
+    satelliteMap.addTo(map);
 
 
-      <div class="legend-item">
+    /* =================================================
+       GIS LAYER GROUPS
+    ================================================= */
 
-        <span
+    const siteBoundaryLayer =
+      L.layerGroup();
 
-          class="legend-dashed"
+    const buildingLayer =
+      L.layerGroup();
 
-          style="border-color:#a90000">
+    const buildingFootprintLayer =
+      L.layerGroup();
 
-        </span>
+    const roadLayer =
+      L.layerGroup();
 
-        Site Boundary
+    const riverLayer =
+      L.layerGroup();
 
-      </div>
-
-
-      <div class="legend-item">
-
-        <span
-
-          class="legend-box"
-
-          style="background:#ffffff">
-
-        </span>
-
-        JVPD Buildings
-
-      </div>
+    const openSpaceLayer =
+      L.layerGroup();
 
 
-      <div class="legend-item">
-
-        <span
-
-          class="legend-box"
-
-          style="background:#eeeeeb">
-
-        </span>
-
-        Building Footprints
-
-      </div>
+    /* =================================================
+       GIS STYLES
+    ================================================= */
 
 
-      <div class="legend-item">
+    /* SITE BOUNDARY */
 
-        <span
+    const siteBoundaryStyle = {
 
-          class="legend-box"
+      color: "#b00000",
 
-          style="background:#d9d9d6">
+      weight: 4,
 
-        </span>
+      dashArray:
+        "10 7",
 
-        Roads
+      fill: false
 
-      </div>
-
-
-      <div class="legend-item">
-
-        <span
-
-          class="legend-box"
-
-          style="background:#a8cedb">
-
-        </span>
-
-        River
-
-      </div>
+    };
 
 
-      <div class="legend-item">
+    /* JVPD BUILDINGS */
 
-        <span
+    const buildingStyle = {
 
-          class="legend-box"
+      color: "#222222",
 
-          style="background:#d5e3ce">
+      weight: 1.1,
 
-        </span>
+      fillColor: "#ffffff",
 
-        Open Space
+      fillOpacity: 0.88
 
-      </div>
-
-    `;
+    };
 
 
-    return div;
+    /* BUILDING FOOTPRINT */
 
-  };
+    const buildingFootprintStyle = {
+
+      color: "#777777",
+
+      weight: 0.7,
+
+      fillColor: "#eeeeeb",
+
+      fillOpacity: 0.35
+
+    };
 
 
-legend.addTo(map);
+    /* ROADS */
+
+    const roadStyle = {
+
+      color: "#777777",
+
+      weight: 0.8,
+
+      fillColor: "#d5d5d2",
+
+      fillOpacity: 0.70
+
+    };
 
 
-</script>
+    /* RIVER */
+
+    const riverStyle = {
+
+      color: "#4d819a",
+
+      weight: 1,
+
+      fillColor: "#9ec9d8",
+
+      fillOpacity: 0.80
+
+    };
+
+
+    /* OPEN SPACE */
+
+    const openSpaceStyle = {
+
+      color: "#68865d",
+
+      weight: 0.8,
+
+      fillColor: "#cfe1c8",
+
+      fillOpacity: 0.80
+
+    };
+
+
+    /* =================================================
+       LOAD GEOJSON FUNCTION
+    ================================================= */
+
+    async function loadLayer(
+
+      file,
+
+      targetLayer,
+
+      style
+
+    ) {
+
+
+      try {
+
+
+        const response =
+          await fetch(file);
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            "Could not load " + file
+          );
+
+        }
+
+
+        const data =
+          await response.json();
+
+
+        const geojson =
+
+          L.geoJSON(
+
+            data,
+
+            {
+
+
+              style: style,
+
+
+              /* ================================
+                 FEATURE INTERACTION
+              ================================= */
+
+              onEachFeature:
+
+                function(
+                  feature,
+                  layer
+                ) {
+
+
+                  /* POPUP */
+
+                  if (
+
+                    feature.properties &&
+
+                    Object.keys(
+                      feature.properties
+                    ).length > 0
+
+                  ) {
+
+
+                    let popup = "";
+
+
+                    Object.entries(
+
+                      feature.properties
+
+                    ).forEach(
+
+                      ([key, value]) => {
+
+
+                        if (
+
+                          value !== null &&
+
+                          value !== undefined &&
+
+                          value !== ""
+
+                        ) {
+
+
+                          popup +=
+
+                            "<strong>" +
+
+                            key +
+
+                            ":</strong> " +
+
+                            value +
+
+                            "<br>";
+
+                        }
+
+                      }
+
+                    );
+
+
+                    if (popup !== "") {
+
+                      layer.bindPopup(
+                        popup
+                      );
+
+                    }
+
+                  }
+
+
+                  /* HOVER */
+
+                  layer.on({
+
+                    mouseover:
+                      function(e) {
+
+
+                        e.target.setStyle({
+
+                          weight: 2
+
+                        });
+
+
+                      },
+
+
+                    mouseout:
+                      function(e) {
+
+
+                        geojson.resetStyle(
+
+                          e.target
+
+                        );
+
+
+                      }
+
+                  });
+
+
+                }
+
+            }
+
+          );
+
+
+        geojson.addTo(
+          targetLayer
+        );
+
+
+        return geojson;
+
+
+      }
+
+
+      catch(error) {
+
+
+        console.error(error);
+
+
+        return null;
+
+
+      }
+
+    }
+
+
+    /* =================================================
+       LOAD ALL GIS DATA
+    ================================================= */
+
+    async function loadAllLayers() {
+
+
+      /* SITE BOUNDARY */
+
+      const siteBoundary =
+
+        await loadLayer(
+
+          "data/data/siteboundary.geojson",
+
+          siteBoundaryLayer,
+
+          siteBoundaryStyle
+
+        );
+
+
+      /* JVPD BUILDINGS */
+
+      await loadLayer(
+
+        "data/data/67_bldg.geojson",
+
+        buildingLayer,
+
+        buildingStyle
+
+      );
+
+
+      /* BUILDING FOOTPRINTS */
+
+      await loadLayer(
+
+        "data/data/bldg_footprint.geojson",
+
+        buildingFootprintLayer,
+
+        buildingFootprintStyle
+
+      );
+
+
+      /* ROADS */
+
+      await loadLayer(
+
+        "data/data/67_roads.geojson",
+
+        roadLayer,
+
+        roadStyle
+
+      );
+
+
+      /* RIVER */
+
+      await loadLayer(
+
+        "data/data/67_river.geojson",
+
+        riverLayer,
+
+        riverStyle
+
+      );
+
+
+      /* OPEN SPACE */
+
+      await loadLayer(
+
+        "data/data/67_openspace.geojson",
+
+        openSpaceLayer,
+
+        openSpaceStyle
+
+      );
+
+
+      /* =================================================
+         DEFAULT GIS LAYERS
+      ================================================= */
+
+      siteBoundaryLayer.addTo(map);
+
+      buildingLayer.addTo(map);
+
+      roadLayer.addTo(map);
+
+      riverLayer.addTo(map);
+
+      openSpaceLayer.addTo(map);
+
+
+      /* =================================================
+         ZOOM TO SITE
+      ================================================= */
+
+      if (siteBoundary) {
+
+
+        map.fitBounds(
+
+          siteBoundary.getBounds(),
+
+          {
+
+            padding:
+              [40, 40]
+
+          }
+
+        );
+
+      }
+
+    }
+
+
+    loadAllLayers();
+
+
+    /* =================================================
+       BASE MAP CONTROL
+    ================================================= */
+
+    const baseMaps = {
+
+
+      "Satellite":
+        satelliteMap,
+
+
+      "Street Map":
+        streetMap
+
+    };
+
+
+    /* =================================================
+       GIS OVERLAY CONTROL
+    ================================================= */
+
+    const overlays = {
+
+
+      "Site Boundary":
+        siteBoundaryLayer,
+
+
+      "JVPD Buildings":
+        buildingLayer,
+
+
+      "Building Footprints":
+        buildingFootprintLayer,
+
+
+      "Roads":
+        roadLayer,
+
+
+      "River":
+        riverLayer,
+
+
+      "Open Spaces":
+        openSpaceLayer
+
+    };
+
+
+    /* =================================================
+       LAYER CONTROL
+    ================================================= */
+
+    L.control.layers(
+
+      baseMaps,
+
+      overlays,
+
+      {
+
+        collapsed: false
+
+      }
+
+    ).addTo(map);
+
+
+    /* =================================================
+       LEGEND
+    ================================================= */
+
+    const legend =
+
+      L.control({
+
+        position:
+          "bottomright"
+
+      });
+
+
+    legend.onAdd =
+
+      function() {
+
+
+        const div =
+
+          L.DomUtil.create(
+
+            "div",
+
+            "legend"
+
+          );
+
+
+        div.innerHTML = `
+
+
+          <div class="legend-title">
+
+            JVPD GIS LAYERS
+
+          </div>
+
+
+          <div class="legend-item">
+
+            <span
+
+              class="legend-dashed"
+
+              style="
+                border-color:#b00000
+              "
+            ></span>
+
+            Site Boundary
+
+          </div>
+
+
+          <div class="legend-item">
+
+            <span
+
+              class="legend-box"
+
+              style="
+                background:#ffffff
+              "
+            ></span>
+
+            JVPD Buildings
+
+          </div>
+
+
+          <div class="legend-item">
+
+            <span
+
+              class="legend-box"
+
+              style="
+                background:#eeeeeb
+              "
+            ></span>
+
+            Building Footprints
+
+          </div>
+
+
+          <div class="legend-item">
+
+            <span
+
+              class="legend-box"
+
+              style="
+                background:#d5d5d2
+              "
+            ></span>
+
+            Roads
+
+          </div>
+
+
+          <div class="legend-item">
+
+            <span
+
+              class="legend-box"
+
+              style="
+                background:#9ec9d8
+              "
+            ></span>
+
+            River
+
+          </div>
+
+
+          <div class="legend-item">
+
+            <span
+
+              class="legend-box"
+
+              style="
+                background:#cfe1c8
+              "
+            ></span>
+
+            Open Space
+
+          </div>
+
+
+        `;
+
+
+        return div;
+
+      };
+
+
+    legend.addTo(map);
+
+
+  </script>
+
 
 </body>
 
